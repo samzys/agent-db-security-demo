@@ -2,3 +2,6 @@ demo.db
 __pycache__/
 *.pyc
 .DS_Store
+.runtime/
+artifacts/
+.venv/

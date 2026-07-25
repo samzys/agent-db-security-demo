@@ -63,3 +63,21 @@ at the policy boundary.
 Open with `vulnerable_agent.py` (the leak), then run `secure_agent.py` (the
 block) side by side. It's ~15 seconds of terminal output and lands the whole
 argument before a single slide.
+
+## PostgreSQL M0 feasibility spike
+
+The `feat/postgres-m0` branch starts the next experiment without claiming that
+the full control ladder exists yet. It uses a repository-local PostgreSQL 17
+cluster and validates the riskiest assumptions first:
+
+```bash
+make m0-test
+make m0-down
+```
+
+The M0 checks deliberately demonstrate that a custom PostgreSQL setting is not
+a secure identity boundary when the same SQL caller can change it. They then
+verify a task-bound login role, forced RLS, a server-owned capability, a fixed
+tool catalog, and a hash-linked synthetic audit artifact. The local-model lane
+is contract-tested but not counted as verified until a pinned loopback model is
+actually run.
