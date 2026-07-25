@@ -101,9 +101,10 @@ class PostgresExecutor:
             raise ValueError(f"unsupported customer fields: {sorted(unknown)}")
 
         if int(profile_id[1:]) >= 3:
-            if decision.effective_resource != f"ticket:{context.ticket_id}":
+            resource_prefix = "ticket:"
+            if not (decision.effective_resource or "").startswith(resource_prefix):
                 raise ValueError("P3 structured execution lacks a bound resource")
-            ticket_id = context.ticket_id
+            ticket_id = decision.effective_resource[len(resource_prefix) :]
         else:
             ticket_id = str(action.arguments.get("ticket_id", ""))
 

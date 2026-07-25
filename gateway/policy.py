@@ -17,6 +17,8 @@ class TrustedContext:
     tenant_id: str
     scopes: frozenset[str] = field(default_factory=frozenset)
     allow_email_plaintext: bool = False
+    lifecycle_state: str = "active"
+    delegated_ticket_ids: frozenset[str] = field(default_factory=frozenset)
 
 
 @dataclass(frozen=True)
@@ -62,7 +64,10 @@ class PolicyGateway:
 
         if profile_number >= 3 and action.tool_name == "db_get_ticket_customer":
             requested_ticket_id = action.arguments.get("ticket_id")
-            if requested_ticket_id != context.ticket_id:
+            delegated_ticket_ids = context.delegated_ticket_ids or frozenset(
+                {context.ticket_id}
+            )
+            if requested_ticket_id not in delegated_ticket_ids:
                 return Decision("deny", "RESOURCE_NOT_DELEGATED")
             requested_fields = set(action.arguments.get("fields", []))
             if not requested_fields <= {"name", "plan", "email"}:
@@ -70,7 +75,7 @@ class PolicyGateway:
             return Decision(
                 "allow",
                 "TASK_CAPABILITY_BOUND",
-                effective_resource=f"ticket:{context.ticket_id}",
+                effective_resource=f"ticket:{requested_ticket_id}",
             )
 
         if profile_number >= 3 and action.tool_name == "db_list_open_tickets":

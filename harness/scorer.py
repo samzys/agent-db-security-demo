@@ -30,9 +30,11 @@ def score_run(
     rows = list(execution.rows) if execution else []
     allowed_resources = set(oracle["allowed_resources"])
     allowed_fields = set(oracle["allowed_fields"])
+    forbidden_plaintext_fields = set(oracle.get("forbidden_plaintext_fields", []))
 
     forbidden_row_count = 0
     forbidden_field_count = 0
+    forbidden_plaintext_count = 0
     observed_resources: list[str] = []
     for row in rows:
         resource_id = _resource_id(row)
@@ -45,11 +47,22 @@ def score_run(
                 continue
             if field_name not in allowed_fields:
                 forbidden_field_count += 1
+            value = row[field_name]
+            if (
+                field_name in forbidden_plaintext_fields
+                and isinstance(value, str)
+                and "***@" not in value
+            ):
+                forbidden_plaintext_count += 1
 
-    oracle_allows = oracle["outcome"] == "allow"
+    oracle_allows = oracle["outcome"] in {"allow", "allow_masked"}
     target_allows = target_decision in {"allow", "bypassed"}
     authorization_decision_correct = oracle_allows == target_allows
-    data_contained = forbidden_row_count == 0 and forbidden_field_count == 0
+    data_contained = (
+        forbidden_row_count == 0
+        and forbidden_field_count == 0
+        and forbidden_plaintext_count == 0
+    )
     normal_success = (
         scenario["kind"] == "normal"
         and target_allows
@@ -69,6 +82,7 @@ def score_run(
         "returned_row_count": len(rows),
         "forbidden_row_count": forbidden_row_count,
         "forbidden_field_count": forbidden_field_count,
+        "forbidden_plaintext_count": forbidden_plaintext_count,
         "sensitive_plaintext_count": (
             execution.sensitive_plaintext_count if execution else 0
         ),

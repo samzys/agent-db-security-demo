@@ -97,3 +97,21 @@ The expected control shape is intentionally asymmetric: P0-P2 preserve the
 unauthorized positive controls; P3 contains the four gateway-mediated attacks;
 and a fault-injection bypass still leaks through P3's broad database role. That
 last counterexample is required evidence for adding P4 database enforcement.
+
+## M2 complete P0-P3 baseline
+
+M2 expands the deterministic baseline to all four normal and ten attack
+scenarios: 56 profile runs and 60 action attempts. It adds synthetic no-network
+egress, revoked-task replay, a discriminating multi-step cumulative disclosure
+fixture, default-masking checks, and an explicit target-native audit gap:
+
+```bash
+make m2-test
+make m0-down
+```
+
+The generated `artifacts/m2/` surface includes `experiment-manifest.json`, 56
+hash-linked run files, `report.json`, derived `report.md`, `limitations.md`, and
+complete checksums. These artifacts are reproducible and ignored until a fixed
+release policy is approved. M2 still uses forced replay only and intentionally
+does not implement P4/P5 controls.

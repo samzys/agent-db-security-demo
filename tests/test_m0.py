@@ -101,7 +101,8 @@ class AuditTests(unittest.TestCase):
     def test_target_runtime_does_not_import_oracle(self):
         source = "\n".join(
             path.read_text(encoding="utf-8")
-            for path in Path("gateway").glob("*.py")
+            for directory in ("gateway", "egress")
+            for path in Path(directory).glob("*.py")
         )
         self.assertNotIn("harness.oracle", source)
         self.assertNotIn("from harness", source)
