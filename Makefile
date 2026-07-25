@@ -1,6 +1,7 @@
 PYTHON ?= python3
 
 .PHONY: m0-up m0-down m0-clean m0-schema m0-db-test m0-unit m0-artifact m0-test
+.PHONY: m1-run m1-verify m1-test
 
 m0-up:
 	./scripts/m0_runtime.sh up
@@ -25,3 +26,11 @@ m0-artifact:
 	$(PYTHON) -m audit.verify_artifact artifacts/m0/a01-p3.jsonl
 
 m0-test: m0-db-test m0-unit m0-artifact
+
+m1-run: m0-schema
+	$(PYTHON) -m harness.m1_runner
+
+m1-verify:
+	$(PYTHON) -m harness.verify_m1 artifacts/m1/report.json
+
+m1-test: m0-db-test m0-unit m1-run m1-verify

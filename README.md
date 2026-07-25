@@ -81,3 +81,19 @@ verify a task-bound login role, forced RLS, a server-owned capability, a fixed
 tool catalog, and a hash-linked synthetic audit artifact. The local-model lane
 is contract-tested but not counted as verified until a pinned loopback model is
 actually run.
+
+## M1 forced-replay matrix
+
+M1 runs three normal and five attack scenarios against P0-P3 using the same
+Git-tracked oracle and tool catalog. The 32-run matrix separates authorization
+decisions from observed database rows:
+
+```bash
+make m1-test
+make m0-down
+```
+
+The expected control shape is intentionally asymmetric: P0-P2 preserve the
+unauthorized positive controls; P3 contains the four gateway-mediated attacks;
+and a fault-injection bypass still leaks through P3's broad database role. That
+last counterexample is required evidence for adding P4 database enforcement.

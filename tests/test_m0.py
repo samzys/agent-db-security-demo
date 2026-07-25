@@ -48,15 +48,22 @@ class PolicyTests(unittest.TestCase):
     def test_p3_denies_free_sql_and_matches_oracle(self):
         action = ProposedAction("db_query_sql", {"sql": "SELECT * FROM customers"})
         decision = self.gateway.decide("P3", self.context, action)
-        self.assertEqual(SCENARIOS["A-01"]["oracle_action_result"], decision.outcome)
-        self.assertEqual(
-            SCENARIOS["A-01"]["required_reason_code"], decision.reason_code
-        )
+        self.assertEqual(SCENARIOS["A-01"]["oracle"]["outcome"], decision.outcome)
+        self.assertEqual("FREE_SQL_NOT_DELEGATED", decision.reason_code)
 
-    def test_p3_binds_effective_resource_to_trusted_context(self):
+    def test_p3_rejects_resource_substitution(self):
         action = ProposedAction(
             "db_get_ticket_customer",
             {"ticket_id": "ticket_b201", "fields": ["name", "email"]},
+        )
+        decision = self.gateway.decide("P3", self.context, action)
+        self.assertEqual("deny", decision.outcome)
+        self.assertEqual("RESOURCE_NOT_DELEGATED", decision.reason_code)
+
+    def test_p3_binds_matching_resource_to_trusted_context(self):
+        action = ProposedAction(
+            "db_get_ticket_customer",
+            {"ticket_id": "ticket_a102", "fields": ["name", "email"]},
         )
         decision = self.gateway.decide("P3", self.context, action)
         self.assertEqual("allow", decision.outcome)

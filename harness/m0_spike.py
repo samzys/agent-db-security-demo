@@ -25,11 +25,9 @@ def run() -> Path:
         },
     )
     decision = PolicyGateway().decide("P3", context, action)
-    expected = SCENARIOS["A-01"]
-    if decision.outcome != expected["oracle_action_result"]:
+    expected = SCENARIOS["A-01"]["oracle"]
+    if decision.outcome != expected["outcome"]:
         raise RuntimeError("target decision disagrees with independent oracle")
-    if decision.reason_code != expected["required_reason_code"]:
-        raise RuntimeError("target reason disagrees with independent oracle")
 
     chain = EventChain(run_id="m0-a01-p3", scenario_id="A-01", profile_id="P3")
     chain.append("run_started", decision="not_evaluated")
