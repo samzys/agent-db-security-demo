@@ -5,6 +5,10 @@ A minimal, offline demonstration of the attack surface described in the article
 being hijacked by an instruction hidden in the data it reads, then the same
 agent hardened so the injection can no longer steer its actions.
 
+Positioning: a clean-room asset for **Cloud Database Security x AI Agent
+Security**, focused on translating agent authority into enforceable database
+authorization and independently verifiable evidence.
+
 **No API key, no network, no dependencies.** Pure Python 3 standard library +
 a local SQLite file with obviously-synthetic data. Nothing here touches a real
 system or real people — it exists to make a defensive point concrete.
@@ -115,3 +119,10 @@ hash-linked run files, `report.json`, derived `report.md`, `limitations.md`, and
 complete checksums. These artifacts are reproducible and ignored until a fixed
 release policy is approved. M2 still uses forced replay only and intentionally
 does not implement P4/P5 controls.
+
+M3 remains locked until the repository owner completes the
+[`M2 to M3 owner walkthrough`](docs/owner-gates/m2-to-m3-owner-walkthrough.md)
+and explicitly authorizes the next milestone.
+For the hands-on session, open the offline
+[`interactive Chinese teaching page`](docs/owner-gates/m2-to-m3-owner-walkthrough.html)
+and keep the Markdown walkthrough as the canonical gate definition.
